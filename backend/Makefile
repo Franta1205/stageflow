@@ -16,7 +16,6 @@ migrate-up:
 migrate-down:
 	migrate -database "$(DB_URL)" -path $(MIGRATION_PATH) down
 
-
 .PHONY: migrate-rollback
 migrate-rollback:
 	migrate -database "$(DB_URL)" -path $(MIGRATION_PATH) down 1
