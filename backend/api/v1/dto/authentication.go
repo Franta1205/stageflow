@@ -1,4 +1,4 @@
-package dtos
+package dto
 
 type SignUpRequestDTO struct {
 	FirstName string `json:"firstName" binding:"required"`
