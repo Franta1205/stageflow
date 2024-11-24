@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/google/uuid"
 	"stageflow/api/v1/dto"
 	"stageflow/api/v1/models"
 	"stageflow/config/initializers"
@@ -22,6 +23,7 @@ func (ur *UserRepository) FindUserByEmail(email string) (*models.User, error) {
 func (ur *UserRepository) CreateUser(signUpRequest *dto.SignUpRequestDTO) (*models.User, error) {
 	db := initializers.GetDB()
 	user := models.User{
+		ID:        uuid.New().String(),
 		FirstName: signUpRequest.FirstName,
 		LastName:  signUpRequest.LastName,
 		Email:     signUpRequest.Email,
