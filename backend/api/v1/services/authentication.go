@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
 	"stageflow/api/v1/dto"
 	"stageflow/api/v1/repository"
 )
@@ -26,6 +27,13 @@ func (s *AuthService) Register(signUpRequest *dto.SignUpRequestDTO) error {
 		return err
 	}
 
+	hashedPassword, err := hashPassword(signUpRequest.Password)
+	if err != nil {
+		return nil
+	}
+
+	signUpRequest.Password = hashedPassword
+
 	user, err := userRepo.CreateUser(signUpRequest)
 	if err != nil {
 		return err
@@ -33,4 +41,12 @@ func (s *AuthService) Register(signUpRequest *dto.SignUpRequestDTO) error {
 
 	fmt.Println("registering new user", user)
 	return nil
+}
+
+func hashPassword(password string) (string, error) {
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(passwordHash), nil
 }
