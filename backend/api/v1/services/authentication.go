@@ -43,6 +43,25 @@ func (s *AuthService) Register(signUpRequest *dto.SignUpRequestDTO) error {
 	return nil
 }
 
+func (s *AuthService) Login(requestDTO *dto.SignInRequestDTO) error {
+	userRepo := repository.NewUserRepository()
+
+	user, err := userRepo.FindUserByEmail(requestDTO.Email)
+	if err != nil {
+		return err
+	}
+
+	if user == nil {
+		return errors.New("user does not exist")
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(requestDTO.Password)); err != nil {
+		return errors.New("invalid password")
+	}
+
+	return nil
+}
+
 func hashPassword(password string) (string, error) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {

@@ -18,6 +18,7 @@ func MapRoutes() {
 		auth := v1Api.Group("/auth")
 		{
 			auth.POST("/register", authController.CreateUser)
+			auth.POST("/login", authController.Login)
 		}
 	}
 }

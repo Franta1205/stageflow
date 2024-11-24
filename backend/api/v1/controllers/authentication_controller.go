@@ -29,3 +29,19 @@ func (a *AuthController) CreateUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "user created"})
 }
+
+func (a *AuthController) Login(c *gin.Context) {
+	var authInput dto.SignInRequestDTO
+
+	if err := c.ShouldBindJSON(&authInput); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	authService := services.NewAuthService()
+	if err := authService.Login(&authInput); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "successfully logged in"})
+}
