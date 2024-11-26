@@ -13,6 +13,16 @@ func NewUserRepository() *UserRepository {
 	return &UserRepository{}
 }
 
+func (ur *UserRepository) Find(id string) (*models.User, error) {
+	var user models.User
+	db := initializers.GetDB()
+	result := db.Where("id=?", id).First(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
+}
+
 func (ur *UserRepository) FindUserByEmail(email string) (*models.User, error) {
 	var user models.User
 	db := initializers.GetDB()

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"stageflow/api"
 	"stageflow/api/v1/controllers"
+	"stageflow/middlewares"
 )
 
 func MapRoutes() {
@@ -12,13 +13,23 @@ func MapRoutes() {
 	healthController := api.NewHealthController()
 	router.GET("/ping", healthController.Ping)
 
-	v1Api := router.Group("/api/v1")
+	public := router.Group("/api/v1")
 	{
 		authController := controllers.NewAuthenticationController()
-		auth := v1Api.Group("/auth")
+		auth := public.Group("/auth")
 		{
 			auth.POST("/register", authController.CreateUser)
 			auth.POST("/login", authController.Login)
+		}
+	}
+
+	protected := router.Group("/api/v1")
+	protected.Use(middlewares.CheckAuth)
+	{
+		authController := controllers.NewAuthenticationController()
+		auth := protected.Group("/auth")
+		{
+			auth.GET("/user", middlewares.CheckAuth, authController.GetUser)
 		}
 	}
 }
