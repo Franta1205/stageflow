@@ -6,6 +6,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 	"stageflow/api/v1/dto"
+	"stageflow/api/v1/models"
 	"stageflow/api/v1/repository"
 )
 
@@ -43,23 +44,23 @@ func (s *AuthService) Register(signUpRequest *dto.SignUpRequestDTO) error {
 	return nil
 }
 
-func (s *AuthService) Login(requestDTO *dto.SignInRequestDTO) error {
+func (s *AuthService) Login(requestDTO *dto.SignInRequestDTO) (*models.User, error) {
 	userRepo := repository.NewUserRepository()
 
 	user, err := userRepo.FindUserByEmail(requestDTO.Email)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if user == nil {
-		return errors.New("user does not exist")
+		return nil, errors.New("user does not exist")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(requestDTO.Password)); err != nil {
-		return errors.New("invalid password")
+		return nil, errors.New("invalid password")
 	}
 
-	return nil
+	return user, nil
 }
 
 func hashPassword(password string) (string, error) {
