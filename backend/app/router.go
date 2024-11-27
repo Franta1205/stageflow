@@ -9,7 +9,7 @@ import (
 
 func MapRoutes() {
 	fmt.Println("setting up routes")
-
+	router.Use(middlewares.SetUpCORS)
 	healthController := api.NewHealthController()
 	router.GET("/ping", healthController.Ping)
 
