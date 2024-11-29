@@ -11,10 +11,12 @@ var (
 
 func StartApp() {
 	initializers.ConnectDB()
+	initializers.ConnectRedis()
 	MapRoutes()
+	defer initializers.CloseDB()
+	defer initializers.CloseRedis()
 	err := router.Run(":8080")
 	if err != nil {
-		defer initializers.CloseDB()
 		panic(err)
 	}
 }
