@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 	"github.com/redis/go-redis/v9"
 	"stageflow/config/initializers"
 	"time"
@@ -18,18 +19,20 @@ func NewTokenRepository() *TokenRepository {
 }
 
 func (tr *TokenRepository) BlackListJWT(ctx context.Context, userID string, jwt string) error {
+	key := fmt.Sprintf("blacklist:token:%s", jwt)
 	expiration := 24 * time.Hour
-	err := tr.Redis.SAdd(ctx, "blacklist:user:"+userID, jwt, expiration).Err()
+	err := tr.Redis.Set(ctx, key, userID, expiration).Err()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (tr *TokenRepository) FindJWT(ctx context.Context, userID string) ([]string, error) {
-	tokens, err := tr.Redis.SMembers(ctx, "blacklist:user:"+userID).Result()
+func (tr *TokenRepository) FindJWT(ctx context.Context, jwt string) (string, error) {
+	key := fmt.Sprintf("blacklist:token:%s", jwt)
+	token, err := tr.Redis.Get(ctx, key).Result()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return tokens, nil
+	return token, nil
 }
