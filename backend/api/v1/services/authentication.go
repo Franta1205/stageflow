@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"stageflow/api/v1/dto"
-	"stageflow/api/v1/models"
 	"stageflow/api/v1/repository"
 	"stageflow/pkg/auth"
 )
@@ -44,7 +43,7 @@ func (s *AuthService) Register(signUpRequest *dto.SignUpRequestDTO) error {
 	return nil
 }
 
-func (s *AuthService) Login(requestDTO *dto.SignInRequestDTO) (*models.User, error) {
+func (s *AuthService) Login(requestDTO *dto.SignInRequestDTO) (*dto.UserResponse, error) {
 	userRepo := repository.NewUserRepository()
 
 	user, err := userRepo.FindUserByEmail(requestDTO.Email)
@@ -65,13 +64,7 @@ func (s *AuthService) Login(requestDTO *dto.SignInRequestDTO) (*models.User, err
 		return nil, err
 	}
 
-	tokenRepository := repository.NewTokenRepository()
-	err = tokenRepository.SetUserJWT(user.ID, jwt)
-	if err != nil {
-		return nil, err
-	}
+	userResponse := dto.NewUserResponse(user, jwt)
 
-	fmt.Println("this is jwt", jwt)
-
-	return user, nil
+	return userResponse, nil
 }
