@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"stageflow/config/initializers"
@@ -31,6 +32,9 @@ func (tr *TokenRepository) BlackListJWT(ctx context.Context, userID string, jwt 
 func (tr *TokenRepository) FindJWT(ctx context.Context, jwt string) (string, error) {
 	key := fmt.Sprintf("blacklist:token:%s", jwt)
 	token, err := tr.Redis.Get(ctx, key).Result()
+	if errors.Is(err, redis.Nil) {
+		return "", errors.New("key not present")
+	}
 	if err != nil {
 		return "", err
 	}
