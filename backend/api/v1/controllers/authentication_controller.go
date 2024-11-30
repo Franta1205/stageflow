@@ -2,12 +2,9 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
 	"net/http"
 	"stageflow/api/v1/dto"
 	"stageflow/api/v1/services"
-	"stageflow/config/initializers"
-	"time"
 )
 
 type AuthController struct{}
@@ -48,15 +45,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	generateToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":  user.ID,
-		"exp": time.Now().Add(time.Hour * 24).Unix(),
-	})
-
-	jwtSecret := initializers.LoadEnvVariable("JWT_SECRET")
-	token, err := generateToken.SignedString([]byte(jwtSecret))
-
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	c.JSON(http.StatusOK, gin.H{"token": user})
 }
 
 func (a *AuthController) GetUser(c *gin.Context) {

@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"golang.org/x/crypto/bcrypt"
 	"stageflow/api/v1/dto"
 	"stageflow/api/v1/models"
 	"stageflow/api/v1/repository"
+	"stageflow/pkg/auth"
 )
 
 type AuthService struct{}
@@ -28,7 +28,7 @@ func (s *AuthService) Register(signUpRequest *dto.SignUpRequestDTO) error {
 		return err
 	}
 
-	hashedPassword, err := hashPassword(signUpRequest.Password)
+	hashedPassword, err := auth.HashPassword(signUpRequest.Password)
 	if err != nil {
 		return nil
 	}
@@ -56,17 +56,22 @@ func (s *AuthService) Login(requestDTO *dto.SignInRequestDTO) (*models.User, err
 		return nil, errors.New("user does not exist")
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(requestDTO.Password)); err != nil {
-		return nil, errors.New("invalid password")
+	if err := auth.ComparePassword(user.Password, requestDTO.Password); err != nil {
+		return nil, err
 	}
+
+	jwt, err := auth.GenerateJWT(user)
+	if err != nil {
+		return nil, err
+	}
+
+	tokenRepository := repository.NewTokenRepository()
+	err = tokenRepository.SetUserJWT(user.ID, jwt)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("this is jwt", jwt)
 
 	return user, nil
-}
-
-func hashPassword(password string) (string, error) {
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		return "", err
-	}
-	return string(passwordHash), nil
 }
