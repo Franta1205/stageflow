@@ -29,7 +29,8 @@ func MapRoutes() {
 		authController := controllers.NewAuthenticationController()
 		auth := protected.Group("/auth")
 		{
-			auth.GET("/user", middlewares.CheckAuth, authController.GetUser)
+			auth.GET("/user", authController.GetUser)
+			auth.POST("/logout", authController.LogOut)
 		}
 	}
 }

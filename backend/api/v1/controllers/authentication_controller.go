@@ -48,6 +48,10 @@ func (a *AuthController) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": user})
 }
 
+func (a *AuthController) LogOut(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "user logged out"})
+}
+
 func (a *AuthController) GetUser(c *gin.Context) {
 	user, _ := c.Get("currentUser")
 	c.JSON(200, gin.H{
