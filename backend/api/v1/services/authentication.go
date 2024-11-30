@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/jinzhu/gorm"
@@ -67,4 +68,13 @@ func (s *AuthService) Login(requestDTO *dto.SignInRequestDTO) (*dto.UserResponse
 	userResponse := dto.NewUserResponse(user, jwt)
 
 	return userResponse, nil
+}
+
+func (s *AuthService) LogOut(ctx context.Context, userID string, jwt string) error {
+	tokenRepository := repository.NewTokenRepository()
+	err := tokenRepository.BlackListJWT(ctx, userID, jwt)
+	if err != nil {
+		return err
+	}
+	return nil
 }

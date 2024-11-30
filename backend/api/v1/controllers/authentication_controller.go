@@ -1,16 +1,24 @@
 package controllers
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"stageflow/api/v1/dto"
+	"stageflow/api/v1/models"
 	"stageflow/api/v1/services"
+	"strings"
+	"time"
 )
 
-type AuthController struct{}
+type AuthController struct {
+	AuthService *services.AuthService
+}
 
 func NewAuthenticationController() *AuthController {
-	return &AuthController{}
+	return &AuthController{
+		AuthService: services.NewAuthService(),
+	}
 }
 
 func (a *AuthController) CreateUser(c *gin.Context) {
@@ -21,8 +29,7 @@ func (a *AuthController) CreateUser(c *gin.Context) {
 		return
 	}
 
-	authService := services.NewAuthService()
-	if err := authService.Register(&authInput); err != nil {
+	if err := a.AuthService.Register(&authInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -38,8 +45,7 @@ func (a *AuthController) Login(c *gin.Context) {
 		return
 	}
 
-	authService := services.NewAuthService()
-	user, err := authService.Login(&authInput)
+	user, err := a.AuthService.Login(&authInput)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -49,6 +55,18 @@ func (a *AuthController) Login(c *gin.Context) {
 }
 
 func (a *AuthController) LogOut(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	defer cancel()
+	bearerToken := c.GetHeader("Authorization")
+	token := strings.TrimPrefix(bearerToken, "Bearer ")
+
+	userInterface, _ := c.Get("currentUser")
+	user := userInterface.(*models.User)
+	err := a.AuthService.LogOut(ctx, token, user.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "user logged out"})
 }
 
