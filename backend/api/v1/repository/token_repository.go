@@ -17,12 +17,19 @@ func NewTokenRepository() *TokenRepository {
 	}
 }
 
-func (tr *TokenRepository) SetUserJWT(userID string, token string) error {
-	ctx := context.Background()
+func (tr *TokenRepository) BlackListJWT(userID string, token string, ctx context.Context) error {
 	expiration := 24 * time.Hour
-	err := tr.Redis.Set(ctx, userID, token, expiration).Err()
+	err := tr.Redis.SAdd(ctx, "blacklist:user:"+userID, token, expiration).Err()
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (tr *TokenRepository) FindJWT(userID string, ctx context.Context) ([]string, error) {
+	tokens, err := tr.Redis.SMembers(ctx, "blacklist:user:"+userID).Result()
+	if err != nil {
+		return nil, err
+	}
+	return tokens, nil
 }
