@@ -29,14 +29,14 @@ func (tr *TokenRepository) BlackListJWT(ctx context.Context, userID string, jwt 
 	return nil
 }
 
-func (tr *TokenRepository) FindJWT(ctx context.Context, jwt string) (string, error) {
+func (tr *TokenRepository) FindJWT(ctx context.Context, jwt string) (*string, error) {
 	key := fmt.Sprintf("blacklist:token:%s", jwt)
 	token, err := tr.Redis.Get(ctx, key).Result()
 	if errors.Is(err, redis.Nil) {
-		return "", errors.New("key not present")
+		return nil, nil
 	}
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return token, nil
+	return &token, nil
 }

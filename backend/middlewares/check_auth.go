@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"stageflow/api/v1/repository"
 	"stageflow/config/initializers"
+	"stageflow/pkg/auth"
 	"strings"
 	"time"
 )
@@ -29,6 +30,12 @@ func CheckAuth(c *gin.Context) {
 	}
 
 	tokenString := authToken[1]
+	ctx := c.Request.Context()
+	if !auth.IsValid(ctx, tokenString) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "token is not valid"})
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

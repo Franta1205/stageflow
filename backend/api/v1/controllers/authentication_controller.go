@@ -62,7 +62,7 @@ func (a *AuthController) LogOut(c *gin.Context) {
 
 	userInterface, _ := c.Get("currentUser")
 	user := userInterface.(*models.User)
-	err := a.AuthService.LogOut(ctx, token, user.ID)
+	err := a.AuthService.LogOut(ctx, user.ID, token)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
