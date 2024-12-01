@@ -32,5 +32,10 @@ func MapRoutes() {
 			auth.GET("/user", authController.GetUser)
 			auth.POST("/logout", authController.LogOut)
 		}
+		organisationController := controllers.NewOrganisationController()
+		org := protected.Group("/organisation")
+		{
+			org.POST("/create", organisationController.Create)
+		}
 	}
 }
