@@ -1,16 +1,24 @@
 package services
 
 import (
-	"fmt"
 	"stageflow/api/v1/dto"
+	"stageflow/api/v1/repository"
 )
 
-type OrganisationService struct{}
-
-func NewOrganisationService() *OrganisationService {
-	return &OrganisationService{}
+type OrganisationService struct {
+	OrganisationRepo *repository.OrganisationRepository
 }
 
-func (s *OrganisationService) Create(organisationRequest *dto.OrganisationRequest) {
-	fmt.Println("stuff", organisationRequest)
+func NewOrganisationService(r *repository.OrganisationRepository) *OrganisationService {
+	return &OrganisationService{
+		OrganisationRepo: r,
+	}
+}
+
+func (s *OrganisationService) Create(organisationRequest *dto.OrganisationRequest) error {
+	_, err := s.OrganisationRepo.Create(organisationRequest)
+	if err != nil {
+		return err
+	}
+	return nil
 }

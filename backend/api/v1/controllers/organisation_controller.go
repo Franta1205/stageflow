@@ -23,6 +23,10 @@ func (oc *OrganisationController) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	oc.OrganisationService.Create(&organisationRequest)
+	err := oc.OrganisationService.Create(&organisationRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "org created"})
 }

@@ -22,7 +22,8 @@ func NewContainer() *Container {
 	authService := services.NewAuthService(userRepository, tokenRepository)
 
 	// organisation
-	organisationService := services.NewOrganisationService()
+	organisationRepository := repository.NewOrganisationRepository(db)
+	organisationService := services.NewOrganisationService(organisationRepository)
 
 	return &Container{
 		HealthController:       api.NewHealthController(),
