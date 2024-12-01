@@ -11,6 +11,6 @@ func NewOrganisationService() *OrganisationService {
 	return &OrganisationService{}
 }
 
-func (s *OrganisationService) Create(organisationRequset *dto.OrganisationRequest) {
-	fmt.Println("stuff", organisationRequset)
+func (s *OrganisationService) Create(organisationRequest *dto.OrganisationRequest) {
+	fmt.Println("stuff", organisationRequest)
 }
