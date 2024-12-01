@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/redis/go-redis/v9"
-	"stageflow/config/initializers"
 	"time"
 )
 
@@ -13,9 +12,9 @@ type TokenRepository struct {
 	Redis *redis.Client
 }
 
-func NewTokenRepository() *TokenRepository {
+func NewTokenRepository(r *redis.Client) *TokenRepository {
 	return &TokenRepository{
-		Redis: initializers.GetRedisClient(),
+		Redis: r,
 	}
 }
 

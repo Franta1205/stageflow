@@ -26,7 +26,8 @@ func GenerateJWT(u *models.User) (string, error) {
 
 // IsValid jwt in redis is stored as key and value is userID
 func IsValid(ctx context.Context, jwt string) bool {
-	tokenRepository := repository.NewTokenRepository()
+	r := initializers.GetRedisClient()
+	tokenRepository := repository.NewTokenRepository(r)
 	token, err := tokenRepository.FindJWT(ctx, jwt)
 	fmt.Printf("IsValid check - Token: %v, Error: %v\n", token, err)
 

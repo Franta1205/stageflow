@@ -7,6 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"stageflow/api/v1/dto"
 	"stageflow/api/v1/repository"
+	"stageflow/config/initializers"
 	"stageflow/pkg/auth"
 )
 
@@ -71,7 +72,8 @@ func (s *AuthService) Login(requestDTO *dto.SignInRequestDTO) (*dto.UserResponse
 }
 
 func (s *AuthService) LogOut(ctx context.Context, userID string, jwt string) error {
-	tokenRepository := repository.NewTokenRepository()
+	r := initializers.GetRedisClient()
+	tokenRepository := repository.NewTokenRepository(r)
 	err := tokenRepository.BlackListJWT(ctx, userID, jwt)
 	if err != nil {
 		return err
