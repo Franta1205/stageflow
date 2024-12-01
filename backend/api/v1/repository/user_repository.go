@@ -2,21 +2,24 @@ package repository
 
 import (
 	"github.com/google/uuid"
+	"github.com/jinzhu/gorm"
 	"stageflow/api/v1/dto"
 	"stageflow/api/v1/models"
-	"stageflow/config/initializers"
 )
 
-type UserRepository struct{}
+type UserRepository struct {
+	DB *gorm.DB
+}
 
-func NewUserRepository() *UserRepository {
-	return &UserRepository{}
+func NewUserRepository(db *gorm.DB) *UserRepository {
+	return &UserRepository{
+		DB: db,
+	}
 }
 
 func (ur *UserRepository) Find(id string) (*models.User, error) {
 	var user models.User
-	db := initializers.GetDB()
-	result := db.Where("id=?", id).First(&user)
+	result := ur.DB.Where("id=?", id).First(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -25,8 +28,7 @@ func (ur *UserRepository) Find(id string) (*models.User, error) {
 
 func (ur *UserRepository) FindUserByEmail(email string) (*models.User, error) {
 	var user models.User
-	db := initializers.GetDB()
-	result := db.Where("email=?", email).First(&user)
+	result := ur.DB.Where("email=?", email).First(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -34,7 +36,6 @@ func (ur *UserRepository) FindUserByEmail(email string) (*models.User, error) {
 }
 
 func (ur *UserRepository) CreateUser(signUpRequest *dto.SignUpRequestDTO) (*models.User, error) {
-	db := initializers.GetDB()
 	user := models.User{
 		ID:        uuid.New().String(),
 		FirstName: signUpRequest.FirstName,
@@ -42,7 +43,7 @@ func (ur *UserRepository) CreateUser(signUpRequest *dto.SignUpRequestDTO) (*mode
 		Email:     signUpRequest.Email,
 		Password:  signUpRequest.Password,
 	}
-	result := db.Create(&user)
+	result := ur.DB.Create(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}

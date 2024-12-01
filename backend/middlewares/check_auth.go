@@ -62,7 +62,8 @@ func CheckAuth(c *gin.Context) {
 	}
 
 	id := claims["id"].(string)
-	userRepository := repository.NewUserRepository()
+	db := initializers.GetDB()
+	userRepository := repository.NewUserRepository(db)
 	user, err := userRepository.Find(id)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})

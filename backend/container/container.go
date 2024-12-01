@@ -15,8 +15,9 @@ type Container struct {
 }
 
 func NewContainer() *Container {
+	db := initializers.GetDB()
 	// auth
-	userRepository := repository.NewUserRepository()
+	userRepository := repository.NewUserRepository(db)
 	tokenRepository := repository.NewTokenRepository(initializers.GetRedisClient())
 	authService := services.NewAuthService(userRepository, tokenRepository)
 
