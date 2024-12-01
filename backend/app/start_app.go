@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/gin-gonic/gin"
 	"stageflow/config/initializers"
+	"stageflow/container"
 )
 
 var (
@@ -12,7 +13,9 @@ var (
 func StartApp() {
 	initializers.ConnectDB()
 	initializers.ConnectRedis()
-	MapRoutes()
+	// to init controllers
+	c := container.NewContainer()
+	MapRoutes(c)
 	defer initializers.CloseDB()
 	defer initializers.CloseRedis()
 	err := router.Run(":8080")

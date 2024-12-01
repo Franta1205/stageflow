@@ -2,40 +2,35 @@ package app
 
 import (
 	"fmt"
-	"stageflow/api"
-	"stageflow/api/v1/controllers"
+	"stageflow/container"
 	"stageflow/middlewares"
 )
 
-func MapRoutes() {
+func MapRoutes(c *container.Container) {
 	fmt.Println("setting up routes")
 	router.Use(middlewares.SetUpCORS)
-	healthController := api.NewHealthController()
-	router.GET("/ping", healthController.Ping)
+	router.GET("/ping", c.HealthController.Ping)
 
 	public := router.Group("/api/v1")
 	{
-		authController := controllers.NewAuthenticationController()
 		auth := public.Group("/auth")
 		{
-			auth.POST("/register", authController.CreateUser)
-			auth.POST("/login", authController.Login)
+			auth.POST("/register", c.AuthController.CreateUser)
+			auth.POST("/login", c.AuthController.Login)
 		}
 	}
 
 	protected := router.Group("/api/v1")
 	protected.Use(middlewares.CheckAuth)
 	{
-		authController := controllers.NewAuthenticationController()
 		auth := protected.Group("/auth")
 		{
-			auth.GET("/user", authController.GetUser)
-			auth.POST("/logout", authController.LogOut)
+			auth.GET("/user", c.AuthController.GetUser)
+			auth.POST("/logout", c.AuthController.LogOut)
 		}
-		organisationController := controllers.NewOrganisationController()
 		org := protected.Group("/organisation")
 		{
-			org.POST("/create", organisationController.Create)
+			org.POST("/create", c.OrganisationController.Create)
 		}
 	}
 }

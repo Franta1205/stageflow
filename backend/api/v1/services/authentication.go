@@ -11,15 +11,20 @@ import (
 	"stageflow/pkg/auth"
 )
 
-type AuthService struct{}
+type AuthService struct {
+	UserRepo  *repository.UserRepository
+	TokenRepo *repository.TokenRepository
+}
 
-func NewAuthService() *AuthService {
-	return &AuthService{}
+func NewAuthService(ur *repository.UserRepository, tr *repository.TokenRepository) *AuthService {
+	return &AuthService{
+		UserRepo:  ur,
+		TokenRepo: tr,
+	}
 }
 
 func (s *AuthService) Register(signUpRequest *dto.SignUpRequestDTO) error {
-	userRepo := repository.NewUserRepository()
-	_, err := userRepo.FindUserByEmail(signUpRequest.Email)
+	_, err := s.UserRepo.FindUserByEmail(signUpRequest.Email)
 
 	if err == nil {
 		return errors.New("user already exists")
@@ -36,7 +41,7 @@ func (s *AuthService) Register(signUpRequest *dto.SignUpRequestDTO) error {
 
 	signUpRequest.Password = hashedPassword
 
-	user, err := userRepo.CreateUser(signUpRequest)
+	user, err := s.UserRepo.CreateUser(signUpRequest)
 	if err != nil {
 		return err
 	}
@@ -46,9 +51,7 @@ func (s *AuthService) Register(signUpRequest *dto.SignUpRequestDTO) error {
 }
 
 func (s *AuthService) Login(requestDTO *dto.SignInRequestDTO) (*dto.UserResponse, error) {
-	userRepo := repository.NewUserRepository()
-
-	user, err := userRepo.FindUserByEmail(requestDTO.Email)
+	user, err := s.UserRepo.FindUserByEmail(requestDTO.Email)
 	if err != nil {
 		return nil, err
 	}
