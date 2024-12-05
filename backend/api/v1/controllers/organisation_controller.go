@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"stageflow/api/v1/dto"
+	"stageflow/api/v1/models"
 	"stageflow/api/v1/services"
 )
 
@@ -23,7 +24,17 @@ func (oc *OrganisationController) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	err := oc.OrganisationService.Create(&organisationRequest)
+	currentUser, exists := c.Get("currentUser")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found in context"})
+		return
+	}
+	user, ok := currentUser.(*models.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user type in context"})
+		return
+	}
+	err := oc.OrganisationService.Create(&organisationRequest, user.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

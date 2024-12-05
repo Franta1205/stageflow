@@ -17,14 +17,36 @@ func NewOrganisationRepository(db *gorm.DB) *OrganisationRepository {
 	}
 }
 
-func (or *OrganisationRepository) Create(organisationRequest *dto.OrganisationRequest) (*models.Organisation, error) {
+func (or *OrganisationRepository) Create(organisationRequest *dto.OrganisationRequest, userID string) (*models.Organisation, error) {
+	tx := or.DB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 	organisation := models.Organisation{
 		ID:   uuid.New().String(),
 		Name: organisationRequest.Name,
 	}
-	result := or.DB.Create(&organisation)
-	if result.Error != nil {
-		return nil, result.Error
+
+	if err := tx.Create(&organisation).Error; err != nil {
+		tx.Rollback()
+		return nil, err
 	}
+	userOrg := models.UserOrganisation{
+		UserID:         userID,
+		OrganisationID: organisation.ID,
+		Role:           "owner",
+	}
+
+	if err := tx.Create(&userOrg).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, err
+	}
+
 	return &organisation, nil
 }

@@ -15,8 +15,8 @@ func NewOrganisationService(r *repository.OrganisationRepository) *OrganisationS
 	}
 }
 
-func (s *OrganisationService) Create(organisationRequest *dto.OrganisationRequest) error {
-	_, err := s.OrganisationRepo.Create(organisationRequest)
+func (s *OrganisationService) Create(organisationRequest *dto.OrganisationRequest, userID string) error {
+	_, err := s.OrganisationRepo.Create(organisationRequest, userID)
 	if err != nil {
 		return err
 	}
