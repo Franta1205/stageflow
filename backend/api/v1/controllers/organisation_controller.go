@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"stageflow/api/v1/dto"
@@ -44,16 +45,20 @@ func (oc *OrganisationController) Create(c *gin.Context) {
 
 func (oc *OrganisationController) Update(c *gin.Context) {
 	var organisationRequest dto.OrganisationRequest
-
 	if err := c.ShouldBindJSON(&organisationRequest); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	id := c.Param("id")
+	organisationRequest.ID = &id
 
-	if err := oc.OrganisationService.Update(&organisationRequest); err != nil {
+	fmt.Println("org", organisationRequest)
+
+	organisation, err := oc.OrganisationService.Update(&organisationRequest)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"err": "org updated"})
+	c.JSON(http.StatusOK, gin.H{"message": organisation})
 }

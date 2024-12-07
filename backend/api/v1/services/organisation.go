@@ -24,6 +24,10 @@ func (s *OrganisationService) Create(organisationRequest *dto.OrganisationReques
 	return organisation, nil
 }
 
-func (s *OrganisationService) Update(organisationRequest *dto.OrganisationRequest) error {
-	return nil
+func (s *OrganisationService) Update(organisationRequest *dto.OrganisationRequest) (*models.Organisation, error) {
+	organisation, err := s.OrganisationRepo.Update(organisationRequest)
+	if err != nil {
+		return nil, err
+	}
+	return organisation, nil
 }

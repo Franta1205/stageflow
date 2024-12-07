@@ -50,3 +50,17 @@ func (or *OrganisationRepository) Create(organisationRequest *dto.OrganisationRe
 
 	return &organisation, nil
 }
+
+func (or *OrganisationRepository) Update(req *dto.OrganisationRequest) (*models.Organisation, error) {
+	var org models.Organisation
+	if err := or.DB.First(&org, "id = ?", *req.ID).Error; err != nil {
+		return nil, err
+	}
+	result := or.DB.Model(&org).Updates(map[string]interface{}{
+		"name": req.Name,
+	})
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &org, nil
+}

@@ -31,7 +31,7 @@ func MapRoutes(c *container.Container) {
 		org := protected.Group("/organisation")
 		{
 			org.POST("/create", c.OrganisationController.Create)
-			org.POST("/update", c.OrganisationController.Update)
+			org.PUT("/:id/update", c.OrganisationController.Update)
 		}
 	}
 }
