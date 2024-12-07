@@ -34,12 +34,12 @@ func (oc *OrganisationController) Create(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user type in context"})
 		return
 	}
-	err := oc.OrganisationService.Create(&organisationRequest, user.ID)
+	organisation, err := oc.OrganisationService.Create(&organisationRequest, user.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "org created"})
+	c.JSON(http.StatusOK, gin.H{"message": organisation})
 }
 
 func (oc *OrganisationController) Update(c *gin.Context) {

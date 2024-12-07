@@ -2,6 +2,7 @@ package services
 
 import (
 	"stageflow/api/v1/dto"
+	"stageflow/api/v1/models"
 	"stageflow/api/v1/repository"
 )
 
@@ -15,12 +16,12 @@ func NewOrganisationService(r *repository.OrganisationRepository) *OrganisationS
 	}
 }
 
-func (s *OrganisationService) Create(organisationRequest *dto.OrganisationRequest, userID string) error {
-	_, err := s.OrganisationRepo.Create(organisationRequest, userID)
+func (s *OrganisationService) Create(organisationRequest *dto.OrganisationRequest, userID string) (*models.Organisation, error) {
+	organisation, err := s.OrganisationRepo.Create(organisationRequest, userID)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return organisation, nil
 }
 
 func (s *OrganisationService) Update(organisationRequest *dto.OrganisationRequest) error {
