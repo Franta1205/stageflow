@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"stageflow/api/v1/dto"
@@ -51,8 +50,6 @@ func (oc *OrganisationController) Update(c *gin.Context) {
 	}
 	id := c.Param("id")
 	organisationRequest.ID = &id
-
-	fmt.Println("org", organisationRequest)
 
 	organisation, err := oc.OrganisationService.Update(&organisationRequest)
 	if err != nil {
