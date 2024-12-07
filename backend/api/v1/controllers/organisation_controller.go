@@ -41,3 +41,19 @@ func (oc *OrganisationController) Create(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "org created"})
 }
+
+func (oc *OrganisationController) Update(c *gin.Context) {
+	var organisationRequest dto.OrganisationRequest
+
+	if err := c.ShouldBindJSON(&organisationRequest); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := oc.OrganisationService.Update(&organisationRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"err": "org updated"})
+}

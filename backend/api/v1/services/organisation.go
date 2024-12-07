@@ -22,3 +22,7 @@ func (s *OrganisationService) Create(organisationRequest *dto.OrganisationReques
 	}
 	return nil
 }
+
+func (s *OrganisationService) Update(organisationRequest *dto.OrganisationRequest) error {
+	return nil
+}
