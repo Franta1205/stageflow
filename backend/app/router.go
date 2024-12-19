@@ -32,6 +32,9 @@ func MapRoutes(c *container.Container) {
 		{
 			org.POST("/create", c.OrganisationController.Create)
 			org.PUT("/:id/update", c.OrganisationController.Update)
+
+			// webinar creation
+
 		}
 	}
 }

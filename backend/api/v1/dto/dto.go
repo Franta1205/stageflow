@@ -2,6 +2,8 @@ package dto
 
 import "stageflow/api/v1/models"
 
+// authentication
+
 type SignUpRequestDTO struct {
 	FirstName string `json:"firstName" binding:"required,min=2,max=50"`
 	LastName  string `json:"lastName" binding:"required,min=2,max=50"`
@@ -28,4 +30,19 @@ func NewUserResponse(u *models.User, JWT string) *UserResponse {
 		Email:     u.Email,
 		JWT:       JWT,
 	}
+}
+
+// organisation
+
+type OrganisationRequest struct {
+	ID   *string `json:"id,omitempty"`
+	Name string  `json:"name" binding:"required,min=2,max=50"`
+}
+
+// webinar
+
+type WebinarRequest struct {
+	FirstName string `json:"firstName" binding:"required,min=2,max=50"`
+	LastName  string `json:"lastName" binding:"required,min=2,max=50"`
+	Email     string `json:"email" binding:"required,email"`
 }
